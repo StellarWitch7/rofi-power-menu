@@ -41,8 +41,8 @@ declare -A actions
 actions[lockscreen]="loginctl lock-session ${XDG_SESSION_ID-}"
 #actions[switchuser]="???"
 actions[logout]="loginctl terminate-session ${XDG_SESSION_ID-}"
-actions[suspend]="systemctl suspend"
-actions[hibernate]="systemctl hibernate"
+actions[suspend]="loginctl lock-session ${XDG_SESSION_ID-} && systemctl suspend"
+actions[hibernate]="loginctl lock-session ${XDG_SESSION_ID-} && systemctl hibernate"
 actions[reboot]="systemctl reboot"
 actions[shutdown]="systemctl poweroff"
 
