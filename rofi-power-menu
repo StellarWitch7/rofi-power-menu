@@ -41,8 +41,8 @@ declare -A actions
 actions[lockscreen]="loginctl lock-session ${XDG_SESSION_ID-}"
 #actions[switchuser]="???"
 actions[logout]="loginctl terminate-session ${XDG_SESSION_ID-}"
-actions[suspend]="loginctl lock-session ${XDG_SESSION_ID-} && systemctl suspend"
-actions[hibernate]="loginctl lock-session ${XDG_SESSION_ID-} && systemctl hibernate"
+actions[suspend]="systemctl suspend"
+actions[hibernate]="systemctl hibernate"
 actions[reboot]="systemctl reboot"
 actions[shutdown]="systemctl poweroff"
 
@@ -175,6 +175,13 @@ fi
 # Define the messages after parsing the CLI options so that it is possible to
 # configure them in the future.
 
+function elementIn {
+    local e match="$1"
+    shift
+    for e; do [[ "$e" == "$match" ]] && return 0; done
+    return 1
+}
+
 function write_message {
     if [ -z ${symbols_font+x} ];
     then
@@ -265,6 +272,15 @@ else
                 # Tell what would have been done
                 echo "Selected: $entry" >&2
             else
+                if [ ! elementIn "$entry" "${confirmations[@]}" ]
+                then
+                    if [ ! "$entry" = "$lockscreen" ]
+                    then
+                        ${actions[lockscreen]} &
+                        sleep 1
+                    fi
+                fi
+
                 # Perform the action
                 ${actions[$entry]}
             fi
