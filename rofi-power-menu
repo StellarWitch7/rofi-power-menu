@@ -276,7 +276,7 @@ else
                         echo "Confirmation not required; locking screen prior to operation" >&2
                     else
                         ${actions[lockscreen]} &
-                        sleep 1
+                        sleep 3
                     fi
                 fi
             fi
