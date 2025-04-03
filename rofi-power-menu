@@ -272,9 +272,9 @@ else
                 # Tell what would have been done
                 echo "Selected: $entry" >&2
             else
-                if [ ! elementIn "$entry" "${confirmations[@]}" ]
+                if ! elementIn "$entry" "${confirmations[@]}"
                 then
-                    if [ ! "$entry" = "$lockscreen" ]
+                    if [ ! "${actions[$entry]}" = "${actions[lockscreen]}" ]
                     then
                         ${actions[lockscreen]} &
                         sleep 1
