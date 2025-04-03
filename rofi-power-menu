@@ -38,7 +38,7 @@ icons[shutdown]="\Uf0425"
 icons[cancel]="\Uf0156"
 
 declare -A actions
-actions[lockscreen]="loginctl lock-session ${XDG_SESSION_ID-}"
+actions[lockscreen]="i3lock-blurred"
 #actions[switchuser]="???"
 actions[logout]="loginctl terminate-session ${XDG_SESSION_ID-}"
 actions[suspend]="systemctl suspend"
@@ -267,23 +267,29 @@ else
         fi
         if [ "$selection" = "$(print_selection "${confirmationMessages[$entry]}")" ]
         then
+            if ! elementIn "$entry" "${confirmations[@]}"
+            then
+                if [ ! "${actions[$entry]}" = "${actions[lockscreen]}" ]
+                then
+                    if [ $dryrun = true ]
+                    then
+                        echo "Confirmation not required; locking screen prior to operation" >&2
+                    else
+                        ${actions[lockscreen]} &
+                        sleep 1
+                    fi
+                fi
+            fi
+
             if [ $dryrun = true ]
             then
                 # Tell what would have been done
                 echo "Selected: $entry" >&2
             else
-                if ! elementIn "$entry" "${confirmations[@]}"
-                then
-                    if [ ! "${actions[$entry]}" = "${actions[lockscreen]}" ]
-                    then
-                        ${actions[lockscreen]} &
-                        sleep 1
-                    fi
-                fi
-
                 # Perform the action
                 ${actions[$entry]}
             fi
+
             exit 0
         fi
         if [ "$selection" = "$(print_selection "${confirmationMessages[cancel]}")" ]
